@@ -1,0 +1,32 @@
+require 'Game'
+class GameScreen extends Object {
+	public Game game;
+	public Canvas cvs;
+	public Context2D ctx;
+	public Number[2] offset;
+	public Number[2] dimensions;
+	public boolean doRender;
+	public function GameScreen(Game game,Canvas canvas) {
+		this.game=game;
+		this.cvs=canvas;
+		this.ctx=canvas.getContext('2d');
+		this.offset=[0,0];
+		this.dimensions=[100,100];
+		this.doRender=true;
+	}
+	public get Number centerX(){
+		return this.offset[0]+this.dimensions[0]/2;
+	}
+	public get Number centerY() {
+		return this.offset[1]+this.dimensions[1]/2;
+	}
+	public get Number offsetX() {
+		return this.offset[0];
+	}
+	public get Number offsetY() {
+		return this.offset[1];
+	}
+	public set Number offsetX(Number value) {
+		this.offset[0]=value;
+	}
+}
