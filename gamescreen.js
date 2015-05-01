@@ -1,3 +1,9 @@
+/* Copyright (C) Liam Feehery - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Liam Feehery <wfeehery17@archmereacademy.com>, April 2015
+ * "Because Copyright"-Liam
+ */
 function GameScreen(canvas,game) {
 	this.game=game;
 	this.cvs=canvas;
@@ -12,12 +18,11 @@ function GameScreen(canvas,game) {
 	$(canvas).on('mousewheel',function(e){
 		e.preventDefault();
 		e.stopImmediatePropagation();
-		console.groupCollapsed('GameScreen transformations');
 		if(e.ctrlKey) {
-			console.log('Type: scale');
 			var deltaS=-e.originalEvent.deltaY*.05;
-			if(self.sf+deltaS>5)
-				deltaS=5-self.sf;
+			//so you can't zoom too far out or in
+			if(self.sf+deltaS>10)
+				deltaS=10-self.sf;
 			if(self.sf+deltaS<self.msf())
 				deltaS=self.msf()-self.sf;
 			//TODO: cleanup/simplify
@@ -30,6 +35,8 @@ function GameScreen(canvas,game) {
 			self.offset[0]-=e.originalEvent.deltaX;
 			self.offset[1]-=e.originalEvent.deltaY;
 		}
+		//bound the offset so you can't scroll off the map
+		//TODO: maybe do something where you can wrap around when you scroll to the side
 		var cw99=canvas.width-game.map.width*self.sf,ch99=canvas.height-game.map.height*self.sf;
 		if(self.offset[0]<cw99)
 			self.offset[0]=cw99;
@@ -45,23 +52,19 @@ function GameScreen(canvas,game) {
 			self.offset[0]=0;
 		if(!Number.isFinite(self.offset[1]))
 			self.offset[1]=0;
-		console.log('scalar: '+self.sf);
-		console.group('offset');
-		console.log('x: '+self.offset[0]);
-		console.log('y: '+self.offset[1]);
-		console.groupEnd();
-		console.groupEnd();
+// 		console.groupCollapsed('GameScreen transformations');
+// 		console.log('scalar: '+self.sf);
+// 		console.group('offset');
+// 		console.log('x: '+self.offset[0]);
+// 		console.log('y: '+self.offset[1]);
+// 		console.groupEnd();
+// 		console.groupEnd();
 	}).on('click',function(e) {
-		console.groupCollapsed("Canvas click event");
 		//scale coords
 		var scaled=self.mapPoint(e.offsetX,e.offsetY);
-		console.log('scaled x: '+scaled[0]);
-		console.log('scaled y: '+scaled[1]);
 		self.cirx=scaled[0];
 		self.ciry=scaled[1];
-		console.log(e.originalEvent);
-		console.log(game.map.territoryAt(scaled[0],scaled[1]));
-		console.groupEnd();
+// 		console.log(game.map.territoryAt(scaled[0],scaled[1]));
 	}).autoresize();
 }
 GameScreen.prototype.__defineSetter__('width',function(n){this.dimensions[0]=n;});
@@ -80,15 +83,20 @@ GameScreen.prototype.renderFrame=function(){
 	//apply transformations
 	this.ctx.translate(this.offsetX,this.offsetY);
 	this.ctx.scale(this.sf,this.sf);
-	this.game.map.render(this.ctx);
-	this.ctx.beginPath();
-	this.ctx.fillStyle='lime';
-	this.ctx.arc(this.cirx,this.ciry,3,0,2*Math.PI);
-	this.ctx.fill();
+	this.game.render(this.ctx);
+	//draw lines
+	this.ctx.stroke(pth);
+	//draw circle
+// 	this.ctx.globalAlpha=.25;
+// 	this.ctx.beginPath();
+// 	this.ctx.fillStyle='lime';
+// 	this.ctx.arc(this.cirx,this.ciry,3,0,2*Math.PI);
+// 	this.ctx.fill();
+// 	this.ctx.globalAlpha=1;
 	this.ctx.restore();
-	var tmp=this;
+	var self=this;
 	if(this.doRender)
-		requestAnimationFrame(function(){tmp.renderFrame.apply(tmp);});
+		requestAnimationFrame(function(){self.renderFrame.apply(self,[]);});
 };
 GameScreen.prototype.mapPoint=function(point,_) {
 	return [(vsel(point[0],point.x,point)-this.offsetX)/this.sf,(vsel(point[1],point.y,_)-this.offsetY)/this.sf];

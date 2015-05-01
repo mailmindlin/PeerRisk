@@ -1,0 +1,11 @@
+==Kindof working...
+	Added networking support!
+		This now can connect to peers with a server/client event model
+		Working on a peer-shared resource setup, with webRTC and/or serviceWorker's
+	Temporarily removed rendering:
+		I know that I can render stuff, so I temporarily refocused on the infrastructure
+	Animations:
+		The setup screen(s) are cool now, because I added CSS3 animations to them
+	Classes:
+		With class.js, I redid many classes to be better extensible.
+		TODO: speedtest comparisons

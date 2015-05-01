@@ -1,78 +1,109 @@
-var cvs,ctx,pts=[],drawn=[],pth=new Path2D(),img,cvsrect={x:0,y:0,w:100,h:100};
-function clear(){drawn=[];pts=[];reloadPath();}function pop(){drawn.pop();pts.pop();reloadPath();}
-function printme(e){console.log(e);}
-function render() {
-// 	ctx.clearRect(0,0,cvs.width,cvs.height);
-// 	Graphics.drawImageRect(ctx,img,cvs,-cvsrect.x,-cvsrect.y,cvsrect.w,cvsrect.h);
-// 	ctx.drawImage(img,(-cvsrect.x)/,-cvsrect.y,cvs.width*img.width/cvsrect.w,cvs.height*img.height/cvsrect.h);
-	ctx.stroke(pth);
-	requestAnimationFrame(render);
-}
+/* Copyright (C) Liam Feehery - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Liam Feehery <wfeehery17@archmereacademy.com>, April 2015
+ * "Because Copyright"-Liam
+ */
+var pts=[],pth=new Path2D();
+window.gameobjs={};
+function clear(){pts=[];reloadPath();}function pop(){pts.pop();reloadPath();}
 function reloadPath() {
 	var p=new Path2D();
-	if(drawn.length>0) {
-		p.moveTo(drawn[0][0]+cvsrect.x,drawn[0][1]+cvsrect.y);
-		drawn.forEach(function(e){p.lineTo(e[0]+cvsrect.x,e[1]+cvsrect.y);});
+	if(pts.length>0) {
+		p.moveTo(pts[0][0],pts[0][1]);
+		pts.forEach(function(e){p.lineTo(e[0],e[1]);});
 	}
 	pth=p;
 }
+function gotoServerSetup1() {
+	setTimeout(function(){$('#servername').focus();},500);
+	$('#setup').transitionTo($('#server-setup1'),44);
+}
+function gotoServerList() {
+	$('#setup').transitionTo($('#server-list'),45);
+}
+function validateServerName(e) {
+	if(!e.char)
+		e.char=String.fromCharCode(e.which);
+	var val=$('#servername').val()+e.char;
+	if(val.length>0) {
+		$('#ss1-button').addClass('valid');
+		if(e.charCode==13)
+			$('#ss1-button').trigger('click');
+	} else
+		$('#ss1-button').removeClass('valid');
+}
+function beginServer(name) {
+	setTimeout(function(){$('#server-setup1').transitionTo($('#server-terminal'),67)},0);
+	setTimeout(function(){$('#terminal-input').focus()},500);
+	logger.log('Initializing server...');
+	logger.log('Creating server object...');
+	gameobjs.gameserver=new MultiServer();
+	logger.log('Done.');
+}
+function terminalKey(e) {
+	if(!e.char)
+		e.char=String.fromCharCode(e.which);
+	var val=$('#terminal-input').val()+e.char;
+	if(val.length==0)
+		return;
+	if(e.charCode==13) {
+		$('#terminal-input').val('');
+		logger.log('>'+val);
+		doCommand(val,logger);
+		return false;
+	}
+}
+function doCommand(command, logger) {
+	var logger=vsel(logger,console);
+	var args=command.trim().split(' ');
+	console.log(args,args[0].toLowerCase().trim());
+	switch(args[0].toLowerCase().trim()) {
+		case 'echo':
+			logger.log('\t'+command.substr(command.indexOf(' ')));
+			break;
+		case 'hello':
+			logger.log('\tHello!');
+			break;
+		default:
+			logger.error('\tUnknown command \''+command+'\'.');
+			return false;
+	}
+	return true;
+}
 $(document).ready(function() {
-	cvs=$('canvas')[0];
-	window['gamescreen']=new GameScreen(cvs,{map:gm});
-	console.log(gamescreen);
-	gamescreen.renderFrame();
-	return;
-	ctx = cvs.getContext("2d");
-	img=$('<img/>')
-		.attr('src','stdmap.png')
-		.addClass('hidden')
-		.load(function() {
-			render();
-			console.log('done');
-		})[0];
-	img.crossOrigin = "Anonymous";
-	$('body').on('mousewheel',function(e){
-			e.preventDefault();
-			e.stopImmediatePropagation();
-			var o=e.originalEvent;
-			console.log([o,o.deltaMode,o.deltaX,o.deltaY,o.deltaZ]);
-			
-			if(e.ctrlKey) {
-				//get center
-				var cx=o.offsetX*cvsrect.w/cvs.width,cy=o.offsetY*cvsrect.h/cvs.height;
-				//scale factor
-				var sx=o.deltaY/cvsrect.w,sy=o.deltaY/cvsrect.h;
-				console.log([o.offsetX,o.offsetY,cx,cy,sx,sy]);
-				//calculate new rectangle
-				cvsrect.w+=o.deltaY;
-				cvsrect.h+=o.deltaY;
-// 				cvsrect.x=cvsrect.x-o.deltaY;
-			} else {
-				cvsrect.y=cvsrect.y+o.deltaY;
-				cvsrect.x=cvsrect.x+o.deltaX;
-// 				offsetY=Math.min(offsetY-o.deltaY,0);
-			}
-			//bound x,y
-			cvsrect.x=Math.max(cvsrect.x,0);
-			cvsrect.y=Math.max(cvsrect.y,0);
-			console.log(cvsrect);
-			reloadPath();
-			return true;
-		}).on('gesture',printme)
-		.append(img);
+	var cvs=$('canvas')[0];
+	var ha=window.location.hashargs;
+// 	if(!(isset(ha['client'])||isset(ha['server']))) {
+		$('#client-button').click(function(){window.location.hash+='client';gotoServerList();});
+		$('#server-button').click(function(){window.location.hash+='server';gotoServerSetup1();});
+		$('#servername').on('keypress',validateServerName);
+		$('#ss1-button').click(function(e){beginServer($('#servername').val());});
+		$('#terminal-input').on('keypress',terminalKey);
+		$('#terminal-text').on('focus click',function(e){$('#terminal-input').focus();return false;});
+		console.log('Done.');
+// 	}
+// 	if(window.location.hashargs['client']) {
+// 		console.log('Initializing client...');
+// 		window['gameclient']=new GameClient({server:{password:null},player:{name:'Foo',password:'Bar',color:'#00FFFF'}});
+// 		if(window.location.hashargs['auto'])
+// 			gameclient.join();
+// // 		window['gamescreen']=new GameScreen(cvs,new Game(gm));
+// // 		console.log(gamescreen);
+// // 		gamescreen.renderFrame();
+// 		return;
+// 	}else if(window.location.hashargs['server']) {
+// 		console.log('Initializing server...');
+// 		window['gameserver']=new GameServer();
+// 		if(window.location.hashargs['auto'])
+// 			gameserver.open();
+// 	}
+
 	$(cvs).on('mousedown',function(e){
 		if(e.button!=0)
 			return;
-		var cx=e.offsetX-cvsrect.x;
-		var cy=e.offsetY-cvsrect.t;
-		var x=cx/img.width*sizeX;
-		var y=cy/img.height*sizeY;
-		pts.push([x,y]);
-		drawn.push([cx,cy]);
-		pth.lineTo(e.offsetX,e.pageY);
-	}).autoresize()
-	.on('mousemove',function(e){
-// 		console.log(gm.territoryAt(e.offsetX,e.offsetY));
+		var pt=gamescreen.mapPoint([e.offsetX,e.offsetY])
+		pts.push(pt);
+		pth.lineTo(pt[0],pt[1]);
 	});
-	gm.context=ctx;
 });

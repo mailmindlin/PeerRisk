@@ -1,22 +1,57 @@
-<html>
+<html manifest='appcache.mf'>
 	<head>
+		<meta charset="utf-8" /> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<script src="jquery.js"></script>
-		<script src="geom.js"></script>
+		<script src="firebase.js" async></script><!--https://cdn.firebase.com/v0/firebase.js-->
+		<script src="data-connection.js" async></script>
+		<script src="DataChannel.js" async> </script><!--https://cdn.webrtc-experiment.com/DataChannel.js-->
 		<script src="universal.js"></script>
-		<script src="graphics.js"></script>
+		<script src="class.js"></script>
+		<script src="geom.js"></script>
+		<script src='pagetransitions.js'></script>
+		
+		<script src="Logger.js"></script>
+		<script src="Event.js"></script>
+		<script src="context-menu.js"></script>
+		<script src="GameEngine.js"></script>
+		<script src="Network.js"></script>
+		
 		<script src="GameMap.js"></script>
 		<script src="gamescreen.js"></script>
-		<script src="context-menu.js"></script>
-		<script src="game.js"></script>
+		<!--<script src="game.js"></script>
+		<script src="gameserver.js"></script>-->
 		<script src="stdmapvector.js"></script>
 		<script src="main.js"></script>
-		<script src="gameserver.js"></script>
-		<link rel="stylesheet" href="main.css"/>
-		<link rel="stylesheet" href="context-menu.css"/>
+
+		<link rel="stylesheet" href="css/main.css"/>
+		<link rel="stylesheet" href="css/context-menu.css"/>
+		<link rel="stylesheet" href="css/component.css"/>
+		<link rel="stylesheet" href="css/animations.css"/>
 	</head>
 	<body>
-		<div class='background'>
-			<canvas class="fullscreen projector" id='projector' width='800px' height='600px'></canvas>
+		<div id='pt-main' class='pt-perspective'>
+			<div id='setup' class='pt-page pt-page-current'>
+				<div id='client-button'><span class='centered'>Join Server</span></div>
+				<div id='server-button'><span class='centered'>Create Server</span></div>
+			</div>
+			<div id='serverlist' class='pt-page'>
+				<ul id='serverlist' class='list-centered list-unmarked child-selectable'></ul>
+			</div>
+			<div id='server-setup1' class='pt-page'>
+				<div class='centered'>
+					<input type='text' class='input-text-rounded' placeholder='Server Name' id='servername'/>
+					<br/>
+					<div id='ss1-button' class='button'>OK</div>
+				</div>
+			</div>
+			<div id='server-terminal' class='pt-page'>
+				<p id='terminal-text' class='fullscreen'></p>
+				<input id='terminal-input' type='text' class='input-text-integrated' placeholder='Enter command...'/>
+			</div>
+			<div id='page-clientscreen' class='pt-page background'>
+				<canvas class="fullscreen projector" id='projector' width='800px' height='600px'></canvas>
+			</div>
 		</div>
 		<!--<div class='hidden'>
 			<canvas class='fullscreen' id='framebuffer' width='800px' height='600px'></canvas>

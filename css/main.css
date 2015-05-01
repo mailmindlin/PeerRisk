@@ -1,0 +1,122 @@
+/* Copyright (C) Liam Feehery - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Liam Feehery <wfeehery17@archmereacademy.com>, April 2015
+ * "Because Copyright"-Liam
+ */
+html {
+    -webkit-text-size-adjust: none
+}
+body {
+	background-color: black;
+	position: relative;
+	margin: 0px;
+}
+.fullscreen {
+	position: fixed;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+}
+#projector {
+	background-color: gray;
+}
+.hidden {
+	display: none;
+}
+.fullscreen.keep-aspect-ratio {
+	width: 100%;
+	height: 100%;
+}
+#setup div {
+	position: fixed;
+	border-style: solid;
+	border-radius: 25px;
+	border-width: 0px;
+	text-align: center;
+	width: 80%;
+	height: calc(30% - 10px);
+	left: 10%;
+	font-size: 36px;
+	-webkit-transition-duration: 0.3s;
+	transition-duration: 0.3s;
+	-webkit-transition-property: transform;
+	transition-property: transform;
+}
+.centered {
+	position: relative;
+	top: calc(50% - 1em / 2);
+}
+#setup div:hover {
+	-webkit-transform: scale(1.1);
+	transform: scale(1.1);
+}
+/*#setup div * {
+	position: relative;
+	top: calc(50% - 1em / 2);
+}*/
+#server-button {
+	bottom: 20%;
+	background-color: #0000CC;
+}
+#server-button:hover {
+	background-color: #0000FF;
+}
+#client-button {
+	top: 20%;
+	background-color: #00CC00;
+}
+#client-button:hover {
+	background-color: #00FF00;
+}
+#servername {
+	font-size: 36px;
+}
+#ss1-button {
+	background-color: #60d7a9;
+	font-size: 42px;
+	color: #787A76;/*#ACAEA9;*/
+	opacity: 0;
+}
+#ss1-button.valid {
+	opacity: 1;
+	-webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+#ss1-button.valid:hover {
+	background-color: #60FFA9;
+}
+#terminal-input {
+	outline-width: 0;
+	background: none;
+	border-width: 0px;
+	left: 1em;
+	width: 100%;
+	font-size: 16px;
+	bottom: 1em;
+	position: fixed;
+}
+#terminal-text {
+	font-size: 16px;
+	padding-left: 5px;
+	bottom: 2em;
+	position: fixed;
+	width: 100%;
+	height: auto;
+	display: inline-block;
+}
+/*pages*/
+
+#setup {
+	background-color: #006666;
+}
+#server-setup1 {
+	background: #0ac2d2;
+	text-align: center;
+}
+#server-terminal {
+	background: #067680;
+}
