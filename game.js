@@ -24,70 +24,89 @@ Game.prototype.render=function(context) {
 		console.error(e);
 	}
 };
-function GameClient(data) {
-	xEventSource.apply(this);
-	this.data=data;
-	this.name=vsel(data.server.name,window.location.hashargs['roomid'],undefined);
-	this.player=new Player(data.player);
-
-	this.connection=new DataConnection(connectionName);
-	this.connection.onopen=this.dispatcherFor('open');
-	this.connection.onmessage=withScope(this.onmessage,this);
-	this.connection.onuserleft=this.dispatcherFor('userleft');
-	this.connection.onclose=this.dispatcherFor('close',function(type,event,userid){return new xEvent({type:type,source:event,uid:userid});});
-	this.defaults['userleft']=this.defaults['close']=printme;
-	this.defaults['open']=function(e){
-		
-	};
-}
-GameClient.prototype=Object.create(xEventSource.prototype);
-GameClient.prototype.join=function(waittime,delay){
-	window.location.setHashArg('roomid',this.name);
-	this.uid=Math.round(this.name.hashCode()+Math.secureRandom());
-	console.log('Connecting to game '+this.name);
-	try{
-		this.connection.join(''+this.name);
-	}catch(e){}	
-	var self=this;
-	return new Promise(function(resolve,reject) {
-		var rnd=Math.round(Math.random()*10000);
-		if(self.connection.detectedRoom)
-			resolve();
-		if(waittime>-1)
-			//setup to fail in waittime ms
-			fcbid=setTimeout(function(){
-				//remove event listener
-				self.removeListener('open','jpl'+rnd);
-				console.log('Failure.');
-				if(isset(reject))
-					reject(waittime);
-			},waittime);
-		self.addListener('onopen',function(e){
-			if(fcbid)
-				window.clearTimeout(fcbid);
-			self.removeListener('open','jpl'+rnd);
-			console.log('Success!');
-			resolve(e);
-		},'jpl'+rnd);
-	});
-};
-GameClient.prototype.onmessage=function(msg,uid) {
-	var obj=JSON.parse(msg);
-	obj.uid=uid;
-	console.log(msg,obj);
-	if(obj.action=='ping')
-		this.connection.channels[uid].send(JSON.stringify({action:'pong',msg:'pong!',src:'client'}));
-	else if(obj.action=='pong')
-		this.triggerEvent({cancellable:false,type:'pong',message:msg,uid:uid,obj:obj});
-};
-GameClient.prototype.ping=function() {
-	console.log('Pinging');
-	this.connection.send(JSON.stringify({action:'ping'}));
-};
-GameClient.prototype.login=function() {
-	if(!isset(this.connection))
-		this.join();
-	console.log('Logging in...');
-	this.connection.send(JSON.stringify({action:'login',svpassword:this.data.server.password,password:this.player.password,name:this.player.name,color:this.player.color}));
-	console.log('Done.');
-};
+var GameClient=Client.extend({
+	closed:false,
+	init:function(data) {
+		this.data=data;
+		this._super(this.name,connectionName);
+		this.name=vsel(data.server.name,window.location.hashargs['roomid'],undefined);
+		this.player=new Player(data.player,null,randcolor());
+// 		this.connection.onclose=this.dispatcherFor('close',function(type,event,userid){return new xEvent({type:type,source:event,uid:userid});});
+		this.defaults['userleft']=this.defaults['close']=printmeWith('closed');
+		this.defaults['open']=function(e){	
+			console.log('opened!',e);
+		};
+		this.defaults['message']=withScope(this.onmessage,this);
+	},
+	destroy:function() {
+		var chnl=this.channel;
+		if(chnl) {
+			chnl.onleave=undefined;
+			chnl.ondatachannel=chnl.onmessage=chnl.onopen=function(){chnl.leave();};
+		}
+		try {
+			chnl.leave();
+		}catch(e){}
+		this.closed=true;
+		delete this.eventListeners;
+		delete this.defaults;
+		delete this.channel;
+	},
+	join: function(waittime,delay){
+		window.location.setHashArg('roomid',this.name);
+		this.uid=Math.round(this.name.hashCode()+Math.secureRandom());
+		console.log('Connecting to game '+this.name);
+		try{
+			this.channel.join(''+this.name);
+		}catch(e){}
+		var self=this;
+		return new Promise(function(resolve,reject) {
+			var rnd=Math.round(Math.random()*10000);
+			if(self.channel.joinedARoom)
+				resolve();
+			var fcbid;
+			if(waittime>-1)
+				//setup to fail in waittime ms
+				fcbid=setTimeout(function(){
+					//remove event listener
+					self.removeListener('datachannel','jpl'+rnd);
+					console.log('Failure.');
+					if(isset(reject))
+						reject(waittime);
+				},waittime);
+			self.addListener('datachannel',function(e){
+				if(fcbid)
+					window.clearTimeout(fcbid);
+				else
+					console.log('no fcbid');
+				self.removeListener('datachannel','jpl'+rnd);
+				console.log('Success!',e);
+				self.channel.join(e.source[0]);
+				console.log('Joined!',e.source[0]);
+				resolve(e);
+			},'jpl'+rnd);
+		});
+	},
+	onmessage: function(e) {
+		var msg=e.source[0],uid=e.source[1],latency=e.source[2];
+		var obj=JSON.parse(msg);
+		obj.uid=uid;
+		console.log(msg,obj);
+		if(obj.action=='ping')
+			this.channel.channels[uid].send(JSON.stringify({action:'pong',msg:'pong!',src:'client'}));
+		else if(obj.action=='pong')
+			this.triggerEvent({cancellable:false,type:'pong',message:msg,uid:uid,obj:obj});
+	},
+	ping: function() {
+		console.log('Pinging');
+		this.channel.send(JSON.stringify({action:'ping'}));
+		console.log('done?');
+	},
+	login: function() {
+		if(!isset(this.connection))
+			this.join();
+		console.log('Logging in...');
+		this.connection.send(JSON.stringify({action:'login',svpassword:this.data.server.password,password:this.player.password,name:this.player.name,color:this.player.color}));
+		console.log('Done.');
+	}
+});

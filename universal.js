@@ -10,14 +10,16 @@ window.vsel=function(){for(var i=0;i<arguments.length;++i)if(isset(arguments[i])
 function printme(){console.log(arguments)}
 function printmeWith(text){return function(){console.log([text].concat(arguments))}}
 function withScope(callback,scope){return function(){callback.apply(scope,arguments)}}
+function pad(n, width, z) {z = z || '0';n = n + '';return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;}
+function randcolor() {return '#'+pad(Math.floor(Math.random()*16777216).toString(16),6)}
 
-String.prototype.includes=String.prototype.includes || function(searchString,position){return this.indexOf(searchString,position)>-1;};//because Chrome doesn't have it
+// if(!String.prototype.includes)Object.defineProperty(String.prototype,'includes',{value:function(searchString,position){return this.indexOf(searchString,position)>-1;}});//polyfill (Chrome<41, Firefox<40, IE, Opera, Safari)
 //thanks to http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
-String.prototype.hashCode = function() {var hash = 0, i, chr, len;if (this.length == 0) return hash;for (i = 0, len = this.length; i < len; i++) {chr= this.charCodeAt(i);hash=((hash<< 5) - hash) + chr;hash |= 0; /* Convert to 32bit integer*/}return hash;};
-Math.secureRandom=function(mod){var b=new ArrayBuffer(8);var buf = new Uint8Array(b);var f=new Float32Array(b);window.crypto.getRandomValues(buf);var result=f[0];return isset(mod)?result%mod:result;};
-Object.size = function(obj) {var size=0,key;for(key in obj)if(obj.hasOwnProperty(key))++size;return size;};//size of object
-Array.prototype.find = Array.prototype.find || function(callback,thisArg){for(i=0;i<this.length;++i)if(callback.apply(vsel(thisArg,callback),[this[i],i,this]))return this[i];};
-Array.prototype.invert = Array.prototype.invert || function (a){for(var i=0;i<=a.length/2;++i) {var x=a[i];a[i]=a[a.length-i-1];a[a.length-i]=x;}};
+Object.defineProperty(String.prototype,'hashCode',{value:function(){var hash=0,i,chr,len;if(this.length==0)return hash;for(i=0,len=this.length;i<len;++i){chr=this.charCodeAt(i);hash=((hash<<5)-hash)+chr;hash|=0;}return hash;}});
+Object.defineProperty(Math,'secureRandom',{value:function(mod){var b=new ArrayBuffer(8);var buf=new Uint8Array(b);var f=new Float32Array(b);window.crypto.getRandomValues(buf);var result=f[0];return isset(mod)?result%mod:result;}});
+Object.defineProperty(Object,'size',{value:function(obj) {var size=0,key;for(key in obj)if(obj.hasOwnProperty(key))++size;return size;}});//size of object
+Object.defineProperty(Array.prototype,'find',{value:Array.prototype.find || function(callback,thisArg){for(i=0;i<this.length;++i)if(callback.apply(vsel(thisArg,callback),[this[i],i,this]))return this[i];}});
+Object.defineProperty(Array.prototype,'invert',{value:Array.prototype.invert || function (a){for(var i=0;i<=a.length/2;++i) {var x=a[i];a[i]=a[a.length-i-1];a[a.length-i]=x;}}});
 
 //Fullscreen prefix fixer
 Element.prototype.requestFullscreen = Element.prototype.requestFullscreen || Element.prototype.msRequestFullscreen || Element.prototype.webkitRequestFullscreen || Element.prototype.mozRequestFullscreen || function(){};
@@ -64,9 +66,9 @@ window.location.__defineSetter__('hashargs',function(nv){
 	console.log(nv);
 	window.location.hash='';
 	for(var i in nv)
-		window.location.hash+=encodeURIComponent(i)+'='+encodeURIComponent(nv[i])+'&';
+		window.location.hash+=encodeURIComponent(i)+(nv[i]===true?'':'='+encodeURIComponent(nv[i]))+'&';
 });
-window.location.addHashArg=function(k,v){window.location.hash+=encodeURIComponent(k)+'='+encodeURIComponent(v)+'&';};
+window.location.addHashArg=function(k,v){window.location.hash+=encodeURIComponent(k)+(v===true?'':'='+encodeURIComponent(v))+'&';};
 window.location.removeHashArg=function(k){var tmp=window.location.hashargs;delete tmp[k];window.location.hashargs=tmp;};
 window.location.setHashArg=function(k,v){var ha=window.location.hashargs;if(ha[k]!=''+v){ha[k]=v;window.location.hashargs=ha;}};
 
@@ -116,4 +118,5 @@ $.fn.fullscreen=function(e) {
 		return false;
 	}
 };
+$.fn.xwfocus=function(delay){var self=$(this);setTimeout(function(){self.focus()},delay);return this};
 console.log('done');

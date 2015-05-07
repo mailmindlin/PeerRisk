@@ -89,7 +89,7 @@
 		for(var i in data) {
 			for(var j=0;j<data[i].length;++j)
 				if((!data.hasOwnProperty(data[i][j]))) {
-					console.error('Asymmetric data structure: data['+i+']['+j+'] ('+data[i][j]+') has no match in data['+data[i][j]+'] ('+data[data[i][j]]+').');
+					console.warn('Asymmetric data structure: data['+i+']['+j+'] ('+data[i][j]+') has no match in data['+data[i][j]+'] ('+data[data[i][j]]+').');
 					++errors;
 					continue;
 				} else {
@@ -98,7 +98,7 @@
 					for(var k=0;k<data[data[i][j]].length && !success;++k)
 						success=data[data[i][j]][k]==i;
 					if(!success) {
-						console.error('Asymmetric data structure: data['+i+']['+j+'] ('+data[i][j]+') has no match in data['+data[i][j]+'] ('+data[data[i][j]]+').');
+						console.warn('Asymmetric data structure: data['+i+']['+j+'] ('+data[i][j]+') has no match in data['+data[i][j]+'] ('+data[data[i][j]]+').');
 						++errors;
 					} else {
 						console.log(data[data[i][j]],data[i][j]);
@@ -131,13 +131,6 @@
 	get serialized() {
 		return JSON.stringify(this.state);
 	},
-	deserialize: function(str) {//STATIC
-		var state= JSON.parse(str);
-		var result=new GameMap();
-		state.continents.forEach(function(continent){result.newContinent(continent.name,continent.bonus,continent.children);});
-		result.applyMap(state.mappingData);
-		return result;
-	},
 	render: function(context) {
 		if(bdrawimg && isset(this.image.tagName))
 			context.drawImage(this.image,0,0,this.width,this.height);
@@ -167,3 +160,10 @@
 		console.groupEnd();
 	}
 });
+GameMap.deserialize= function(str) {//STATIC
+	var state= JSON.parse(str);
+	var result=new GameMap();
+	state.continents.forEach(function(continent){result.newContinent(continent.name,continent.bonus,continent.children);});
+	result.applyMap(state.mappingData);
+	return result;
+};

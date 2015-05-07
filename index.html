@@ -2,32 +2,32 @@
 	<head>
 		<meta charset="utf-8" /> 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-		<script src="jquery.js"></script>
-		<script src="firebase.js" async></script><!--https://cdn.firebase.com/v0/firebase.js-->
-		<script src="data-connection.js" async></script>
-		<script src="DataChannel.js" async> </script><!--https://cdn.webrtc-experiment.com/DataChannel.js-->
-		<script src="universal.js"></script>
-		<script src="class.js"></script>
-		<script src="geom.js"></script>
-		<script src='pagetransitions.js'></script>
+		<link rel="stylesheet" href="css/main.css"/>
+		<link rel="stylesheet" href="css/context-menu.css"/>
+		<link rel="stylesheet" href="css/component.css"/>
+		<link rel="stylesheet" href="css/animations.css"/>
 		
-		<script src="Logger.js"></script>
+		<script src="firebase.js" async></script><!--https://cdn.firebase.com/v0/firebase.js-->
+		<script src="jquery.js"></script>
+		<script src="universal.js"></script>
+		<!-- <script src="data-connection.js" async defer></script> -->
+		<script src="DataChannel.js" async defer> </script>https://cdn.webrtc-experiment.com/DataChannel.js-->
+		<script src="class.js"></script>
+		<script src="geom.js" async></script>
+		<script src='pagetransitions.js' async></script>
+		
+		<script src="Logger.js" async defer></script>
 		<script src="Event.js"></script>
-		<script src="context-menu.js"></script>
+		<script src="context-menu.js" async></script>
 		<script src="GameEngine.js"></script>
 		<script src="Network.js"></script>
 		
 		<script src="GameMap.js"></script>
 		<script src="gamescreen.js"></script>
-		<!--<script src="game.js"></script>
-		<script src="gameserver.js"></script>-->
-		<script src="stdmapvector.js"></script>
-		<script src="main.js"></script>
-
-		<link rel="stylesheet" href="css/main.css"/>
-		<link rel="stylesheet" href="css/context-menu.css"/>
-		<link rel="stylesheet" href="css/component.css"/>
-		<link rel="stylesheet" href="css/animations.css"/>
+		<script src="game.js"></script>
+		<script src="gameserver.js"></script>
+		<script src="stdmapvector.js" async></script>
+		<script src="main.js" defer></script>
 	</head>
 	<body>
 		<div id='pt-main' class='pt-perspective'>
@@ -35,14 +35,31 @@
 				<div id='client-button'><span class='centered'>Join Server</span></div>
 				<div id='server-button'><span class='centered'>Create Server</span></div>
 			</div>
-			<div id='serverlist' class='pt-page'>
-				<ul id='serverlist' class='list-centered list-unmarked child-selectable'></ul>
+			<div id='joinserverpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<div style='font-size: 24px;'>Enter server name</div><br/>
+					<input type='text' class='input-text-rounded' placeholder='Server Name' id='tojoin'/><br/>
+					<div id='joinbutton' class='button validate-required' data-validate_reqired='#tojoin'>OK</div>
+				</div>
+			</div>
+			<div id='userloginpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<input type='text' class='input-text-rounded' placeholder='Username' tabindex='1' id='c-username' required/><br/>
+					<br/>
+					<input type='password' class='input-text-rounded' placeholder='Password' tabindex='2' id='c-password' tooltip='Optional Password'/><br/>
+					<div id='userloginpage-submit' class='button validate-required' tabindex='3' data-validate_reqired='#c-username'>Next</div>
+				</div>
+			</div>
+			<div id='client-connectingpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<div id='client-connecting-msg' style='font-size:24'>Connecting to server...</div>
+				</div>
 			</div>
 			<div id='server-setup1' class='pt-page'>
 				<div class='centered'>
 					<input type='text' class='input-text-rounded' placeholder='Server Name' id='servername'/>
 					<br/>
-					<div id='ss1-button' class='button'>OK</div>
+					<div id='ss1-button' class='button validate-required' data-validate_required='#servername'>OK</div>
 				</div>
 			</div>
 			<div id='server-terminal' class='pt-page'>

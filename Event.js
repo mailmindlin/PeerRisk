@@ -19,9 +19,9 @@ var xEvent=Class.extend({init:function(data) {
 	dispatch:function(src){return vsel(src,this._target).dispatchEvent(this)},
 	});
 var xEventSource=Class.extend({
+	eventListeners:{},
+	defaults:{},
 	init:function(){
-		this.eventListeners={};
-		this.defaults={};
 	},
 	addListener: function(evt,callback,id) {
 		if(!this.eventListeners.hasOwnProperty(evt))
@@ -36,10 +36,11 @@ var xEventSource=Class.extend({
 	},
 	triggerEvent: function(data) {this.dispatchEvent(new xEvent(data));},
 	dispatchEvent: function(event) {
-		console.log('Dispatching event: '+JSON.stringify(event));
+		console.log('Dispatching event: ',event);
 		if(this.eventListeners.hasOwnProperty(event.type)) {
 			for(var evl in this.eventListeners[event.type]) {
 				var fn=this.eventListeners[event.type][evl][0];
+// 				console.log(fn);
 				try {
 					if(fn(event)==false) {
 						event.preventDefault();
@@ -57,7 +58,7 @@ var xEventSource=Class.extend({
 		}
 		if((!event.defaultPrevented)&&(!event.cancelled)&&this.defaults.hasOwnProperty(event.type)) {
 			this.defaults[event.type](event);
-			console.log('default');
+// 			console.log('default');
 		}
 		return event;
 	},

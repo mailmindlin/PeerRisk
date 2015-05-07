@@ -5,14 +5,17 @@
 	Class.extendMultiple=function() {
 		var _super = this.prototype;
 		var result=arguments[0];
-		for(var i=1;i<arguments.length-1;++i)
+		var _scls=[result.prototype._props];
+		for(var i=1;i<arguments.length-1;++i) {
 			result=result.extend(arguments[i].prototype._props);
+			_scls.push(arguments[i].prototype._props);
+		}
 		result=result.extend(arguments[arguments.length-1]);
+		result.prototype._scls=_scls;
 		return result;
 	};
 	Class.extend = function(prop) {
 		var _super = this.prototype;
-	 
 		// Instantiate a base class (but only create the instance,
 		// don't run the init constructor)
 		initializing = true;

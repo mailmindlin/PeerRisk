@@ -15,70 +15,54 @@ function reloadPath() {
 	}
 	pth=p;
 }
-function gotoServerSetup1() {
-	setTimeout(function(){$('#servername').focus();},500);
-	$('#setup').transitionTo($('#server-setup1'),44);
-}
-function gotoServerList() {
-	$('#setup').transitionTo($('#server-list'),45);
-}
-function validateServerName(e) {
-	if(!e.char)
-		e.char=String.fromCharCode(e.which);
-	var val=$('#servername').val()+e.char;
-	if(val.length>0) {
-		$('#ss1-button').addClass('valid');
-		if(e.charCode==13)
-			$('#ss1-button').trigger('click');
-	} else
-		$('#ss1-button').removeClass('valid');
+function validator(button,validator) {
+	return function(e){
+		if(!e.char)
+			e.char=String.fromCharCode(e.which);
+		var val=$(this).val()+e.char;
+		var result=validator(val);
+		if(result) {
+			button.addClass('valid');
+			if(e.charCode==13)
+				button.trigger('click');
+		} else
+			button.removeClass('valid');
+	};
 }
 function beginServer(name) {
 	setTimeout(function(){$('#server-setup1').transitionTo($('#server-terminal'),67)},0);
-	setTimeout(function(){$('#terminal-input').focus()},500);
-	logger.log('Initializing server...');
+	$('#terminal-input').xwfocus(500);
+	logger.log('Initializing server \''+name+'\'...');
 	logger.log('Creating server object...');
-	gameobjs.gameserver=new MultiServer();
+	console.log(name);
+	gameobjs.gameserver=new GameServer(name);
+	gameobjs.gameserver.openChannel();
 	logger.log('Done.');
 }
-function terminalKey(e) {
-	if(!e.char)
-		e.char=String.fromCharCode(e.which);
-	var val=$('#terminal-input').val()+e.char;
-	if(val.length==0)
-		return;
-	if(e.charCode==13) {
-		$('#terminal-input').val('');
-		logger.log('>'+val);
-		doCommand(val,logger);
-		return false;
-	}
-}
-function doCommand(command, logger) {
-	var logger=vsel(logger,console);
-	var args=command.trim().split(' ');
-	console.log(args,args[0].toLowerCase().trim());
-	switch(args[0].toLowerCase().trim()) {
-		case 'echo':
-			logger.log('\t'+command.substr(command.indexOf(' ')));
-			break;
-		case 'hello':
-			logger.log('\tHello!');
-			break;
-		default:
-			logger.error('\tUnknown command \''+command+'\'.');
-			return false;
-	}
-	return true;
+function beginClient(name) {
+	console.group('Initializing client...');
+	gameobjs.gameclient=new GameClient({server:{name:name}});
+	console.log('Connecting...');
+	gameobjs.gameclient.join(5000,500).then(function() {
+		console.log('Success!');
+		$('#client-connecting-msg').html('Getting resource list...');
+		gameobjs.gameclient.channel.send(JSON.stringify({action:'resourcemeta',vtype:'player'}));
+	},function(){gameobjs.gameclient.destroy();delete gameobjs.gameclient;$('.pt-page-current').transitionTo($('#userloginpage'),36)});
+	console.groupEnd();
 }
 $(document).ready(function() {
 	var cvs=$('canvas')[0];
 	var ha=window.location.hashargs;
 // 	if(!(isset(ha['client'])||isset(ha['server']))) {
-		$('#client-button').click(function(){window.location.hash+='client';gotoServerList();});
-		$('#server-button').click(function(){window.location.hash+='server';gotoServerSetup1();});
-		$('#servername').on('keypress',validateServerName);
-		$('#ss1-button').click(function(e){beginServer($('#servername').val());});
+		$('#client-button').click(function(){var ha=window.location.hashargs;delete ha.server;ha.client=true;window.location.hashargs=ha;$('#c-username').xwfocus(500);$('#setup').transitionTo($('#userloginpage'),67)});
+		$('#server-button').click(function(){var ha=window.location.hashargs;delete ha.client;ha.server=true;window.location.hashargs=ha;$('#servername').xwfocus(500);$('#setup').transitionTo($('#server-setup1'),67);});
+		$('#servername').on('input keypress',validator($('#ss1-button'),function(text){return text.length>1;}));//.on('change',function(e){beginServer($('#servername').val());});
+		$('#ss1-button').on('click',function(e){beginServer($('#servername').val());});
+		$('#tojoin').on('input keypress',validator($('#joinbutton'),function(text){return text.length>1;}));//.on('change',function(e){$('#joinbutton').trigger('click');});//.on('keypress',function(e){if(e.which==13){e.preventDefault();$(this).trigger('change');}});
+		$('#c-username').on('input keypress',validator($('#userloginpage-submit'),function(text){return text.length>1;}));//.on('change',function(e){$('#userloginpage-submit').trigger('click')});
+		$('#c-password').on('input keypress',validator($('#userloginpage-submit'),function(){return $('#c-username').val().length>1;}));
+		$('#userloginpage-submit').click(function(){$('#tojoin').xwfocus(500);$('#userloginpage').transitionTo($('#joinserverpage'),45);});
+		$('#joinbutton').click(function(e){$('.pt-page-current').transitionTo($('#client-connectingpage'),3);beginClient($('#tojoin').val());});
 		$('#terminal-input').on('keypress',terminalKey);
 		$('#terminal-text').on('focus click',function(e){$('#terminal-input').focus();return false;});
 		console.log('Done.');
