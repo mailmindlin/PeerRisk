@@ -24,66 +24,42 @@ var MultiServer=xEventSource.extend({
 	channelname: 'foo',
 	userid: 'helloworld',
 	resources:[],
-	init:function(name,connection){
+	init:function(){
 		this._super();
-		if(!DataChannel)
-			throw "Include \"//cdn.webrtc-experiment.com/DataChannel.js\".";
-		this.name=name;
-		this.connection=vsel(connection,connectionName);
-		this.channel=new DataChannel(this.connection);
-		this.channel.userid=name;
-		this.channel.ondatachannel=this.dispatcherFor('datachannel');
-		this.channel.onmessage=this.dispatcherFor('message');
-		this.channel.onopen=this.dispatcherFor('open');
-		this.channel.onleave=this.dispatcherFor('leave');
-		this.defaults['datachannel']=function(e) {
-			this.channel.join(e.source[0]);
-		}//printmeWith('datachannel');//function(e){this.channel.join(e.source[0]);};
-		this.defaults['message']=printmeWith('msg');
-		this.defaults['open']=this.onopen;
+		this.config = {'iceServers': [{'url': 'stun:stun.services.mozilla.com'}, {'url': 'stun:stun.l.google.com:19302'}]};
+		this.sdpConstraints = {optional: [],mandatory:{OfferToReceiveAudio: true,OfferToReceiveVideo: true}};
+		var connection = this.connection=new RTCPeerConnection(this.config);
 	},
-	openChannel: function() {
-// 		this.channel.open(this.connection,{userid:this.name});
-		this.channel.userid=this.name;
-		this.channel.connect(this.connection);
-	},
-	onopen: function(e) {
-		console.log(e);
-		for(var i=0;i<this.resources.length;++i) {
-			var resource=this.resources[i];
-			this.channel.send((typeof resource === 'string')?resource:((resource.serialized)?resource.serialized:JSON.stringify(resource)));
-		}
-	},
-	connect: function(name) {
-		this.channel.connect(name);
+	offer:function() {
+		var self=this;
+		this.connection.createOffer(function (offerSDP) {
+    		self.connection.setLocalDescription(new RTCSessionDescription(offerSDP),printmeWith('Yay!'),printmeWith('Oh.'));
+			console.log('offer sdp', offerSDP.sdp);
+			console.log('type',      offerSDP.type);
+			console.log(offerSDP);
+		},printme,this.sdpConstraints);
 	}
 });
 var Client=xEventSource.extend({
 	discovered:[],
 	isConnected:false,
-	init: function(name,server,connection){
-		if(!DataChannel)
-			throw "Include \"//cdn.webrtc-experiment.com/DataChannel.js\".";
-		this._super();
-		this.name=name;
-		this.server=server;
-		this.connection=vsel(connection,connectionName);
-		this.channel=new DataChannel(this.connection);
-		this.channel.ondatachannel=this.dispatcherFor('datachannel');
-		this.channel.onmessage=this.dispatcherFor('message');
-		this.channel.onopen=this.dispatcherFor('open');
-		this.channel.onleave=this.dispatcherFor('leave');
-		this.addListener('datachannel',this.datachannel);
+	init: function(){
+		this.sdpConstraints = {optional: [],mandatory:{OfferToReceiveAudio: true,OfferToReceiveVideo: true}};
+		this.config = {'iceServers': [{'url': 'stun:stun.services.mozilla.com'}, {'url': 'stun:stun.l.google.com:19302'}]};
+		this.connection=new RTCPeerConnection(this.config);
 	},
-	connect:function() {
-		this.channel.connect(this.name);
-	},
-	datachannel:function(e) {
-		var data=e.source[0];
-		if(data.id==this.connection && data.owner==this.name) {
-			this.channel.join(data);
-			this.isConnected=true;
-		}
+	respond:function(offer) {
+// 		this.connection = new RTCSessionDescription(offer);
+		var self=this;
+		this.remoteDescription = new RTCSessionDescription(offer);
+        this.connection.setRemoteDescription(this.remoteDescription,withScope(function(){
+        	console.log('foo');
+        	self.connection.createAnswer(function(answer) {
+				self.connection.setLocalDescription(answer);
+				console.log('offer sdp', answer.sdp);
+				console.log('type',      answer.type);
+			}, printme, self.sdpConstraints);
+        },this),function(e){console.error('problem:',e)});
 	}
 });
 
