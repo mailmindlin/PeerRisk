@@ -19,16 +19,17 @@
 // 	'stun://stun.voxgratia.org',
 // 	'stun://stun.xten.com'
 // ];
-var connectionName='risk02';//"risk01-kM5Kzu0AIKmZ74WzrGh7LJ5=+0islyys-je1RGYD07GIp95YjU8nR=W45iOvwmQlG";
+//REQUIRES: Socket {}
 var MultiServer=xEventSource.extend({
-	channelname: 'foo',
-	userid: 'helloworld',
-	resources:[],
-	init:function(){
+	connections:[],
+	config:{'iceServers': [{'url': 'stun:stun.services.mozilla.com'}, {'url': 'stun:stun.l.google.com:19302'}]},
+	sdpConstraints: {optional: [],mandatory:{OfferToReceiveAudio: true,OfferToReceiveVideo: true}},
+	init:function(options){
+		if(!options)
+			throw new Error('Options required');
 		this._super();
-		this.config = {'iceServers': [{'url': 'stun:stun.services.mozilla.com'}, {'url': 'stun:stun.l.google.com:19302'}]};
-		this.sdpConstraints = {optional: [],mandatory:{OfferToReceiveAudio: true,OfferToReceiveVideo: true}};
-		var connection = this.connection=new RTCPeerConnection(this.config);
+		this.signaler=options.signaler;
+		this.connection=options.connection || new RTCPeerConnection(this.config);
 	},
 	offer:function() {
 		var self=this;
