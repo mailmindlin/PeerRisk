@@ -15,6 +15,12 @@ var Player = Class.extend({
 		return {name:this.name,password:this.password,color:this.color};
 	}
 });
+var GameEngineState=function(){}
+GameEngineState.map=gapi.drive.realtime.custom.collaborativeField('map');
+GameEngineState.ownership=gapi.drive.realtime.custom.collaborativeField('ownership');
+GameEngineState.server=gapi.drive.realtime.custom.collaborativeField('server');
+GameEngineState.inEventQueue=gapi.drive.realtime.custom.collaborativeField('inEventQueue');
+GameEngineState.outEventQueue=gapi.drive.realtime.custom.collaborativeField('outEventQueue');
 var GameEngine=xEventSource.extend({
 	init: function(data) {
 		this.__defineGetter__('map',function(){return data.map});

@@ -1,0 +1,66 @@
+<!-- Use a templated HTML printing scriptlet to import common stylesheet. -->
+<html>
+	<head>
+		<meta charset="utf-8" /> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<?!= include(['css/main.css','css/component.css','css/animations.css']); ?>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+		<script src='https://cdn.rawgit.com/openpgpjs/openpgpjs/v0.10.1/dist/openpgp.min.js' async onload='function(){console.log(openpgp)}'></script>
+		<?!= include(['universal.js','Class.js']);?>
+		<?!= include(['geom.js','pagetransitions.js','Logger.js','context-menu.js'],true);?>
+		<?!= include(['Event.js','GameEngine.js','Network.js','GameMap.js','gamescreen.js','game.js','gameserver.js','main.js','rtutil.js']);?>
+		<?!= include(['context-menu.js','main.js'],true,true);?>
+			<!-- /*include('stdmapvector.js',true);*/?> -->
+			<script>window.onerror=function(e){console.log(e);};var sdata=<?=sdata?>;window.server=JSON.parse(sdata);console.log('server:',sdata,window.server);</script><button id='na' style='display:none'></button>
+	</head>
+	<body>
+		<div id='pt-main' class='pt-perspective'>
+			<div id='setup' class='pt-page pt-page-current'>
+				<div id='client-button'><span class='centered'>Join Server</span></div>
+				<div id='server-button'><span class='centered'>Create Server</span></div>
+			</div>
+			<div id='joinserverpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<div style='font-size: 24px;'>Enter server name</div><br/>
+					<input type='text' class='input-text-rounded' placeholder='Server Name' id='tojoin'/><br/>
+					<div id='joinbutton' class='button validate-required' data-validate_reqired='#tojoin'>OK</div>
+				</div>
+			</div>
+			<div id='userloginpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<input type='text' class='input-text-rounded' placeholder='Username' tabindex='1' id='c-username' required/><br/>
+					<br/>
+					<input type='password' class='input-text-rounded' placeholder='Password' tabindex='2' id='c-password' tooltip='Optional Password'/><br/>
+					<div id='userloginpage-submit' class='button validate-required' tabindex='3' data-validate_reqired='#c-username'>Next</div>
+				</div>
+			</div>
+			<div id='client-connectingpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<div id='client-connecting-msg' style='font-size:24'>Connecting to server...</div>
+				</div>
+			</div>
+			<div id='server-setup1' class='pt-page'>
+				<div class='centered'>
+					<input type='text' class='input-text-rounded' placeholder='Server Name' id='servername'/>
+					<br/>
+					<div id='ss1-button' class='button validate-required' data-validate_required='#servername'>OK</div>
+				</div>
+			</div>
+			<div id='server-terminal' class='pt-page'>
+				<p id='terminal-text' class='fullscreen'></p>
+				<input id='terminal-input' type='text' class='input-text-integrated' placeholder='Enter command...'/>
+			</div>
+			<div id='page-clientscreen' class='pt-page background'>
+				<canvas class="fullscreen projector" id='projector' width='800px' height='600px'></canvas>
+			</div>
+		</div>
+	</body>
+</html>
+<!-- Store data passed to template here, so it is available to the imported JavaScript. -->
+<script>
+	var folderId = <?= folderId ?>;
+</script>
+
+<!-- Use a templated HTML printing scriptlet to import JavaScript. -->
+<?!= HtmlService.createHtmlOutputFromFile('JavaScript').getContent(); ?>

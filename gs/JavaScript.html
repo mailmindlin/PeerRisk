@@ -1,0 +1,56 @@
+<script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+<script>
+var CLIENT_ID = '589089782433-vi1rsm4v55mj1emtund7rhvq9i5e5bj7.apps.googleusercontent.com';
+var SCOPES = ['https://www.googleapis.com/auth/drive','https://www.googleapis.com/auth/drive.install','https://www.googleapis.com/auth/drive.appfolder','https://www.googleapis.com/auth/drive.file'];
+function handleAuthResult(result) {
+	if(result && !result.error) {
+		console.log('auth:',result);
+		//setup to reauthorize when authid times out
+		window.setTimeout(function(){gapi.auth.authorize({client_id: CLIENT_ID, scope: SCOPES, immediate: true},handleAuthResult)},Number.parseInt(result.expires_in)*1000);
+		// gcapi.importPage('serverlist');
+		console.log('a');
+		if(server.action=='open') {
+			console.log('Attempting to open files: '+server.fileids,gapi.client);
+			gcapi.getFile({fileId: server.fileids[0]}).then(function(resp){
+				console.log('Title: ' + resp.meta.title);
+				console.log('Description: ' + resp.meta.description);
+				console.log('MIME type: ' + resp.meta.mimeType);
+				console.log(resp);
+			},printme);
+		}else if(server.action=='create' || (!server.action)) {
+			// console.log('Attempting to create file...');
+// 			var file={
+// 				players:[{name:'Player1',color:'#00FF00',password:'foo'},{name:'Player2',color:'#00FFFF',password:'bar'}],
+// 				map:{},
+// 				ownership:{1:{owner:'Player1',armies:3}},
+// 				xRTC:{}};
+// 			var filestr=JSON.stringify(file);
+// 			console.log(file);
+// 			var name='New Risk Game';
+// 			var mime='application/prisk.game';
+// 			gcapi.uploadString(server.fileid,name,filestr,mime)
+// 				.then(printmeWith('Uploaded file!'),printmeWith('Error uploading'));
+		}
+		doInit();
+	}else {
+		// No access token could be retrieved, force the authorization flow.
+		gapi.auth.authorize({'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': false},handleAuthResult);
+	}
+}
+function doInit() {
+	gapi.drive.realtime.custom.registerType(GameEngineState, 'geState');
+	gapi.drive.realtime.custom.setInitializer(myApp.Book, doInitialize);
+	gcapi.realtime(function(model) {
+		var gameEngineState=model.create('geState');
+		model.getRoot().set('gestate',gameEngineState);
+		gameEngineState.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, printmeWith('value changed'));
+		printmeWith('Initializing')(model);//TODO finish
+	},printmeWith('Doc!'));
+}
+/**
+ * Called when client.js loads. First cals gapi.auth.init, to ensure adblock doesn't hate.
+ * Then attempts to inline authorize this app, which callbacks to handleAuthResult
+ */
+function handleClientLoad() {gapi.auth.init(function() {gapi.auth.authorize({'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': true},handleAuthResult);});}
+</script>
+<script type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
