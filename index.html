@@ -1,1 +1,108 @@
-My Page
+<html manifest='appcache.mf'>
+	<head>
+		<meta charset="utf-8" /> 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" href="css/main.css"/>
+		<link rel="stylesheet" href="css/context-menu.css"/>
+		<link rel="stylesheet" href="css/component.css"/>
+		<link rel="stylesheet" href="css/animations.css"/>
+		
+		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script src="https://rawgit.com/mailmindlin/PeerRisk/master/universal.js"></script>
+		<script src="https://rawgit.com/mailmindlin/PeerRisk/master/class.js"></script>
+		<script src="https://rawgit.com/mailmindlin/PeerRisk/master/geom.js" async></script>
+		<script src='https://rawgit.com/mailmindlin/PeerRisk/master/pagetransitions.js' async></script>
+		
+		<script src="https://rawgit.com/mailmindlin/PeerRisk/master/Logger.js" async defer></script>
+		<script src="https://rawgit.com/mailmindlin/PeerRisk/master/Event.js"></script>
+<!-- 		<script src="context-menu.js" async></script> -->
+<!-- 		<script src="GameEngine.js"></script> -->
+<!-- 		<script src="Network.js"></script> -->
+		
+<!-- 		<script src="GameMap.js"></script> -->
+<!-- 		<script src="gamescreen.js"></script> -->
+<!-- 		<script src="game.js"></script> -->
+<!-- 		<script src="gameserver.js"></script> -->
+<!-- 		<script src="stdmapvector.js" async></script> -->
+		<script src="https://rawgit.com/mailmindlin/PeerRisk/master/main.js" defer></script>
+	</head>
+	<body>
+		<div id='pt-main' class='pt-perspective'>
+			<div id='setuppage' class='pt-page pt-page-current'>
+				<div id='client-button'><span class='centered'>Join Server</span></div>
+				<div id='server-button'><span class='centered'>Create Server</span></div>
+			</div>
+			<div id='joinserverpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<div style='font-size: 24px;'>Enter server name</div><br/>
+					<input type='text' class='input-text-rounded' placeholder='Server Name' id='tojoin'/><br/>
+					<div id='joinbutton' class='button validate-required' data-validate_reqired='#tojoin'>OK</div>
+				</div>
+			</div>
+			<div id='aboutpage' class='pt-page centered-children'>
+				<p>
+					PeerRisk was a game that I wrote because I hated that every time I played Risk with my freinds, we never were able to finish the game. PeerRisk allows
+					you to play at your own rate, and even save your game, so that you never have to clean up before winning.
+				</p>
+			</div>
+			<div id='availplayers-page' class='pt-page centered-children'>
+				<div class='centered'>
+					<table border='0px'>
+						<thead>
+							<tr><th>Servers</th></tr>
+						</thead>
+						<tbody>
+							<tr><td>Foo</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div id='userloginpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<input type='text' class='input-text-rounded' placeholder='Username' tabindex='1' id='c-username' required/><br/>
+					<br/>
+					<input type='password' class='input-text-rounded' placeholder='Password' tabindex='2' id='c-password' tooltip='Optional Password'/><br/>
+					<div id='userloginpage-submit' class='button validate-required' tabindex='3' data-validate_reqired='#c-username'>Next</div>
+				</div>
+			</div>
+			<div id='client-connectingpage' class='pt-page centered-children'>
+				<div class='centered'>
+					<div id='client-connecting-msg' style='font-size:24'>Connecting to server...</div>
+				</div>
+			</div>
+			<div id='server-setup1' class='pt-page'>
+				<div class='centered'>
+					<input type='text' class='input-text-rounded' placeholder='Server Name' id='servername'/>
+					<br/>
+					<div id='ss1-button' class='button validate-required' data-validate_required='#servername'>OK</div>
+				</div>
+			</div>
+			<div id='filechooserloadingpage' class='pt-page centered-children'>
+				<div class='centered' style='font-size:36px'>
+					<p>Loading online games....</p>
+					<progress/>
+				</div>
+			</div>
+			<div id='filechooser' class='pt-page'>
+				<table border='0px'>
+					<tbody>
+						<tr>
+							<td class='g-folder' tabindex='1'>Games</td>
+							<td class='g-game g-file' tabindex='2'>Test Game 1</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id='server-terminal' class='pt-page'>
+				<p id='terminal-text' class='fullscreen'></p>
+				<input id='terminal-input' type='text' class='input-text-integrated' placeholder='Enter command...'/>
+			</div>
+			<div id='page-clientscreen' class='pt-page background'>
+				<canvas class="fullscreen projector" id='projector' width='800px' height='600px'></canvas>
+			</div>
+		</div>
+		<!--<div class='hidden'>
+			<canvas class='fullscreen' id='framebuffer' width='800px' height='600px'></canvas>
+		</div>-->
+	</body>
+</html>
