@@ -15,20 +15,20 @@
 		
 		<script src="Logger.js" async defer></script>
 		<script src="Event.js"></script>
-		<script src="context-menu.js" async></script>
-		<script src="GameEngine.js"></script>
-		<script src="Network.js"></script>
+<!-- 		<script src="context-menu.js" async></script> -->
+<!-- 		<script src="GameEngine.js"></script> -->
+<!-- 		<script src="Network.js"></script> -->
 		
-		<script src="GameMap.js"></script>
-		<script src="gamescreen.js"></script>
-		<script src="game.js"></script>
-		<script src="gameserver.js"></script>
-		<script src="stdmapvector.js" async></script>
+<!-- 		<script src="GameMap.js"></script> -->
+<!-- 		<script src="gamescreen.js"></script> -->
+<!-- 		<script src="game.js"></script> -->
+<!-- 		<script src="gameserver.js"></script> -->
+<!-- 		<script src="stdmapvector.js" async></script> -->
 		<script src="main.js" defer></script>
 	</head>
 	<body>
 		<div id='pt-main' class='pt-perspective'>
-			<div id='setup' class='pt-page pt-page-current'>
+			<div id='setuppage' class='pt-page pt-page-current'>
 				<div id='client-button'><span class='centered'>Join Server</span></div>
 				<div id='server-button'><span class='centered'>Create Server</span></div>
 			</div>
@@ -37,6 +37,24 @@
 					<div style='font-size: 24px;'>Enter server name</div><br/>
 					<input type='text' class='input-text-rounded' placeholder='Server Name' id='tojoin'/><br/>
 					<div id='joinbutton' class='button validate-required' data-validate_reqired='#tojoin'>OK</div>
+				</div>
+			</div>
+			<div id='aboutpage' class='pt-page centered-children'>
+				<p>
+					PeerRisk was a game that I wrote because I hated that every time I played Risk with my freinds, we never were able to finish the game. PeerRisk allows
+					you to play at your own rate, and even save your game, so that you never have to clean up before winning.
+				</p>
+			</div>
+			<div id='availplayers-page' class='pt-page centered-children'>
+				<div class='centered'>
+					<table border='0px'>
+						<thead>
+							<tr><th>Servers</th></tr>
+						</thead>
+						<tbody>
+							<tr><td>Foo</td></tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 			<div id='userloginpage' class='pt-page centered-children'>
@@ -58,6 +76,22 @@
 					<br/>
 					<div id='ss1-button' class='button validate-required' data-validate_required='#servername'>OK</div>
 				</div>
+			</div>
+			<div id='filechooserloadingpage' class='pt-page centered-children'>
+				<div class='centered' style='font-size:36px'>
+					<p>Loading online games....</p>
+					<progress/>
+				</div>
+			</div>
+			<div id='filechooser' class='pt-page'>
+				<table border='0px'>
+					<tbody>
+						<tr>
+							<td class='g-folder' tabindex='1'>Games</td>
+							<td class='g-game g-file' tabindex='2'>Test Game 1</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 			<div id='server-terminal' class='pt-page'>
 				<p id='terminal-text' class='fullscreen'></p>

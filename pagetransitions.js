@@ -1,4 +1,6 @@
 $.fn.transitionTo=function(otherpage,animation) {
+	if(typeof otherpage === 'number' )
+		$('.pt-page-current').transitionTo($(this),otherpage);
 	if($.fn.transitionTo.isAnimating)
 		return false;
 	$.fn.transitionTo.isAnimating=true;

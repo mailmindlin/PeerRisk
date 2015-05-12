@@ -21,6 +21,7 @@ GameEngineState.ownership=gapi.drive.realtime.custom.collaborativeField('ownersh
 GameEngineState.server=gapi.drive.realtime.custom.collaborativeField('server');
 GameEngineState.inEventQueue=gapi.drive.realtime.custom.collaborativeField('inEventQueue');
 GameEngineState.outEventQueue=gapi.drive.realtime.custom.collaborativeField('outEventQueue');
+
 var GameEngine=xEventSource.extend({
 	init: function(data) {
 		this.__defineGetter__('map',function(){return data.map});

@@ -22,7 +22,7 @@ body {
 .hidden {
 	display: none;
 }
-#setup div {
+#setuppage div {
 	position: fixed;
 	border-style: solid;
 	border-radius: 25px;
@@ -41,7 +41,7 @@ body {
 	position: relative;
 	top: calc(50% - 1em / 2);
 }
-#setup div:hover {
+#setuppage div:hover {
 	-webkit-transform: scale(1.1);
 	transform: scale(1.1);
 }
@@ -86,7 +86,7 @@ body {
 .centered-children {
 	text-align: center;
 }
-#setup {
+#setuppage {
 	background-color: #006666;
 }
 #userloginpage {
@@ -101,4 +101,16 @@ body {
 }
 #server-terminal {
 	background: #067680;
+}
+#aboutpage {
+	background: #00FFFF;
+}
+#filechooserloadingpage {
+	background: #FF00FF;
+}
+#filechooser {
+	background: #FFFFFF;
+}
+#availplayers-page {
+	background: #FFFFFF;
 }
